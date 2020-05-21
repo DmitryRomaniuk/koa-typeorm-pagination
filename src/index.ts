@@ -513,3 +513,18 @@ export async function paginate(ctx: Context, next: Function) {
     ctx.state.pageable = new Pageable(page, size, indexed, sort)
     return next()
 }
+
+export default {
+    paginate,
+    Order,
+    ArrayPage,
+    Direction,
+    IndexablePage,
+    IndexedPage,
+    InvalidSortError,
+    KoaPageableError,
+    NumberFormatError,
+    Page,
+    Pageable,
+    Sort,
+}

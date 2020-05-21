@@ -423,3 +423,17 @@ function paginate(ctx, next) {
     });
 }
 exports.paginate = paginate;
+exports["default"] = {
+    paginate: paginate,
+    Order: Order,
+    ArrayPage: ArrayPage,
+    Direction: Direction,
+    IndexablePage: IndexablePage,
+    IndexedPage: IndexedPage,
+    InvalidSortError: InvalidSortError,
+    KoaPageableError: KoaPageableError,
+    NumberFormatError: NumberFormatError,
+    Page: Page,
+    Pageable: Pageable,
+    Sort: Sort
+};
