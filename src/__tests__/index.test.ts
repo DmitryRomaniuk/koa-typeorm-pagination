@@ -21,7 +21,7 @@ describe('Tests', () => {
         new Order('propertyE', Direction.desc),
     ]
 
-    const pageOrders = [
+    const pageOrders: Order[] = [
         new Order('firstName', Direction.asc),
         new Order('lastName', Direction.asc),
     ]
@@ -55,14 +55,14 @@ describe('Tests', () => {
             expect(sort.toJSON()).toMatchSnapshot()
         })
 
-        // xit('iterates over orders using for...of loop', () => {
-        //     const sort = new Sort(orders);
-        //     const result = [];
-        //     for (const order of sort) {
-        //         result.push(order);
-        //     }
-        //     expect(result).toMatchSnapshot();
-        // });
+        it('iterates over orders using for...of loop', () => {
+            const sort = new Sort(orders)
+            const result = []
+            for (const order of sort.toJSON()) {
+                result.push(order)
+            }
+            expect(result).toMatchSnapshot()
+        })
 
         it('instance.forEach() method result matches snapshot', () => {
             const sort = new Sort(orders)
@@ -84,7 +84,6 @@ describe('Tests', () => {
             const pageable = new Pageable()
             expect(pageable).toMatchSnapshot()
         })
-
         ;[
             { value: 'singleValue', type: 'string' },
             {
@@ -134,15 +133,18 @@ describe('Tests', () => {
             expect(result).toMatchSnapshot()
         })
 
-        // it('results of instance.map() method result matches snapshot', () => {
-        //     const page = getValidPage();
-        //     const result = page.map((pageContent, idx) => ({ ...pageContent, age: (idx * 5) }));
-        //     expect(result).toMatchSnapshot();
-        // });
+        it('results of instance.map() method result matches snapshot', () => {
+            const page = getValidPage()
+            const result = page.map((pageContent, idx) => ({
+                ...pageContent,
+                age: idx * 5,
+            }))
+            expect(result).toMatchSnapshot()
+        })
     })
 
     describe('IndexedPage class', () => {
-        const getValidIndexedPage = () => {
+        const getValidIndexedPage = (): IndexedPage<number, Order> => {
             const sort = new Sort(pageOrders)
             const pageable = new Pageable(0, 20, false, sort)
             const ids = [1, 2]
@@ -158,11 +160,14 @@ describe('Tests', () => {
             expect(result).toMatchSnapshot()
         })
 
-        // it('results of instance.map() method result matches snapshot', () => {
-        //     const page = getValidIndexedPage();
-        //     const result = page.map((pageContent, idx) => ({ ...pageContent, age: (idx * 5) }));
-        //     expect(result).toMatchSnapshot();
-        // });
+        it('results of instance.map() method result matches snapshot', () => {
+            const page = getValidIndexedPage()
+            const result = page.map((pageContent, idx) => ({
+                ...pageContent,
+                age: idx * 5,
+            }))
+            expect(result).toMatchSnapshot()
+        })
     })
 
     describe('IndexablePage class', () => {
@@ -177,11 +182,14 @@ describe('Tests', () => {
             expect(result).toMatchSnapshot()
         })
 
-        // it('results of instance.map() method result matches snapshot', () => {
-        //     const page = getValidIndexablePage();
-        //     const result = page.map((pageContent, idx) => ({ ...pageContent, age: (idx * 5) }));
-        //     expect(result).toMatchSnapshot();
-        // });
+        it('results of instance.map() method result matches snapshot', () => {
+            const page = getValidIndexablePage()
+            const result = page.map((pageContent, idx) => ({
+                ...pageContent,
+                age: idx * 5,
+            }))
+            expect(result).toMatchSnapshot()
+        })
 
         it('instance.toJSON() method result matches snapshot', () => {
             const page = getValidIndexablePage(true)

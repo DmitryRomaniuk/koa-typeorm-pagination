@@ -366,7 +366,7 @@ export class ArrayPage<T> extends Page {
      * @param iteratee Method to transform content elements
      * @returns Instance of Page
      */
-    map<R>(iteratee: (T: Object) => R): ArrayPage<R> {
+    map<R>(iteratee: (value: T, index: number, array: T[]) => R): ArrayPage<R> {
         return new ArrayPage(
             this.content.map(iteratee),
             this.totalElements,
@@ -391,7 +391,7 @@ export class IndexedPage<I, T> extends Page {
     /**
      * Map of `{id : content item}`
      */
-    index: { [index: string]: T }
+    index: { [k: string]: T }
 
     constructor(
         ids: Array<I>,
@@ -410,7 +410,9 @@ export class IndexedPage<I, T> extends Page {
      * @param iteratee Method to transform content elements
      * @returns Transformed {@link IndexedPage}
      */
-    map<R>(iteratee: (T: Object) => R): IndexedPage<I, R> {
+    map<R>(
+        iteratee: (value: T, index: number, array: T[]) => R
+    ): IndexedPage<I, boolean> {
         const mappedIndex = mapValues(this.index, iteratee)
         return new IndexedPage(
             this.ids,
@@ -458,7 +460,7 @@ export class IndexablePage<
      */
 
     map<R extends { id: string | number }>(
-        iteratee: (T: Object) => R
+        iteratee: (value: T, index: number, array: T[]) => R
     ): IndexablePage<I, R> {
         return new IndexablePage(
             this.content.map(iteratee),
