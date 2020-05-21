@@ -1,0 +1,46 @@
+{
+  "name": "koa-ctx-pagination",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DmitryRomaniuk/koa-ctx-pagination.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/DmitryRomaniuk/koa-ctx-pagination/issues"
+  },
+  "homepage": "https://github.com/DmitryRomaniuk/koa-ctx-pagination#readme",
+  "dependencies": {
+    "koa": "^2.11.0",
+    "lodash-es": "^4.17.15"
+  },
+  "devDependencies": {
+    "@types/jest": "^25.2.2",
+    "@types/koa": "^2.11.3",
+    "@types/lodash-es": "^4.17.3",
+    "husky": "^4.2.5",
+    "jest": "^26.0.1",
+    "lint-staged": "^10.2.4",
+    "prettier": "2.0.5",
+    "ts-jest": "^26.0.0",
+    "typescript": "^3.9.2"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "post-commit": "git update-index --again"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.ts": [
+      "prettier --config .prettierrc --parser typescript --write"
+    ]
+  }
+}
