@@ -1,13 +1,12 @@
 import {
     ArrayPage,
     Direction,
-    IndexablePage,
-    IndexedPage,
     InvalidSortError,
     NumberFormatError,
     Order,
     Pageable,
     paginate,
+    paginateMiddleware,
     Sort,
 } from '../index'
 import { Context } from 'koa'
@@ -93,14 +92,14 @@ describe('Tests', () => {
             { value: new Sort(orders.slice(1, 3)), type: 'sort' },
         ].forEach(({ value, type }) => {
             it(`returns a valid Sort instance when a value of type ${type} is passed to the constructor`, () => {
-                const pageable = new Pageable(1, 10, true, value)
+                const pageable = new Pageable(1, 10, value)
                 expect(pageable.sort).toMatchSnapshot()
             })
         })
 
         it('disregards extra commas in the sort array passed in as a parameter', () => {
             const invalidSort = ['valueA,', 'valueB,,', 'valueC,,,']
-            const result = new Pageable(0, 20, false, invalidSort)
+            const result = new Pageable(0, 20, invalidSort)
             const invalidValues = result.sort?.orders.filter(
                 (order) => order.property.length === 0
             )
@@ -113,7 +112,7 @@ describe('Tests', () => {
                 'valueB::desc',
                 'valueC::::desc',
             ]
-            const pageable = new Pageable(0, 20, false, invalidSort)
+            const pageable = new Pageable(0, 20, invalidSort)
             const invalidValues = pageable.sort?.orders.filter(
                 (order) => order.property.length === 0
             )
@@ -124,7 +123,7 @@ describe('Tests', () => {
     describe('ArrayPage class', () => {
         const getValidPage = () => {
             const sort = new Sort(pageOrders)
-            const pageable = new Pageable(0, 20, false, sort)
+            const pageable = new Pageable(0, 20, sort)
             return new ArrayPage(content, 2, pageable)
         }
 
@@ -143,61 +142,6 @@ describe('Tests', () => {
         })
     })
 
-    describe('IndexedPage class', () => {
-        const getValidIndexedPage = (): IndexedPage<number, Order> => {
-            const sort = new Sort(pageOrders)
-            const pageable = new Pageable(0, 20, false, sort)
-            const ids = [1, 2]
-            const index = content.reduce(
-                (acc, record) => ({ ...acc, [record.id]: record }),
-                {}
-            )
-            return new IndexedPage(ids, index, 2, pageable)
-        }
-
-        it('matches snapshot when valid parameters are passed to the constructor', () => {
-            const result = getValidIndexedPage()
-            expect(result).toMatchSnapshot()
-        })
-
-        it('results of instance.map() method result matches snapshot', () => {
-            const page = getValidIndexedPage()
-            const result = page.map((pageContent, idx) => ({
-                ...pageContent,
-                age: idx * 5,
-            }))
-            expect(result).toMatchSnapshot()
-        })
-    })
-
-    describe('IndexablePage class', () => {
-        const getValidIndexablePage = (isIndexed = false) => {
-            const sort = new Sort(pageOrders)
-            const pageable = new Pageable(0, 20, isIndexed, sort)
-            return new IndexablePage(content, 2, pageable)
-        }
-
-        it('matches snapshot when valid parameters are passed to the constructor', () => {
-            const result = getValidIndexablePage()
-            expect(result).toMatchSnapshot()
-        })
-
-        it('results of instance.map() method result matches snapshot', () => {
-            const page = getValidIndexablePage()
-            const result = page.map((pageContent, idx) => ({
-                ...pageContent,
-                age: idx * 5,
-            }))
-            expect(result).toMatchSnapshot()
-        })
-
-        it('instance.toJSON() method result matches snapshot', () => {
-            const page = getValidIndexablePage(true)
-            const result = page.toJSON()
-            expect(result).toMatchSnapshot()
-        })
-    })
-
     describe('paginate function', () => {
         const next = () => {}
         const context = {
@@ -211,25 +155,25 @@ describe('Tests', () => {
         } as Context
 
         it('context.state matches snapshot when paginate is called with valid context', async () => {
-            await paginate(context, next)
+            await paginateMiddleware(context, next)
             expect(context.state).toMatchSnapshot()
         })
 
         it('context.state matches snapshot when paginate is called with string values for page and size', async () => {
             const updatedQuery = { ...context.query, page: '10', size: '15' }
-            await paginate({ ...context, query: updatedQuery }, next)
+            await paginateMiddleware({ ...context, query: updatedQuery }, next)
             expect(context.state).toMatchSnapshot()
         })
 
         it('context.state matches snapshot when paginate is called with empty strings for page and size', async () => {
             const updatedQuery = { ...context.query, page: '', size: '' }
-            await paginate({ ...context, query: updatedQuery }, next)
+            await paginateMiddleware({ ...context, query: updatedQuery }, next)
             expect(context.state).toMatchSnapshot()
         })
 
         it('context.state matches snapshot when paginate is called with undefined page, size, and sort', async () => {
             const updatedQuery = { indexed: 'true' }
-            await paginate({ ...context, query: updatedQuery }, next)
+            await paginateMiddleware({ ...context, query: updatedQuery }, next)
             expect(context.state).toMatchSnapshot()
         })
 
@@ -240,7 +184,10 @@ describe('Tests', () => {
                 size: 'size',
             }
             try {
-                await paginate({ ...context, query: updatedQuery }, next)
+                await paginateMiddleware(
+                    { ...context, query: updatedQuery },
+                    next
+                )
             } catch (e) {
                 expect(e.name).toBe('NumberFormatError')
             }
@@ -249,7 +196,10 @@ describe('Tests', () => {
         it('throws error when invalid sort direction is provided', async () => {
             const updatedQuery = { ...context.query, sort: 'firstName:foo' }
             try {
-                await paginate({ ...context, query: updatedQuery }, next)
+                await paginateMiddleware(
+                    { ...context, query: updatedQuery },
+                    next
+                )
             } catch (e) {
                 expect(e.name).toBe('InvalidSortError')
             }

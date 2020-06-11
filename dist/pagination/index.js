@@ -10,5 +10,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !exports.hasOwnProperty(p)) __createBinding(exports, m, p);
 }
 exports.__esModule = true;
-__exportStar(require("./pagination/index"), exports);
-__exportStar(require("./middleware"), exports);
+__exportStar(require("./interfaces"), exports);
+__exportStar(require("./pagination"), exports);
+__exportStar(require("./paginate"), exports);
+__exportStar(require("./interfaces"), exports);

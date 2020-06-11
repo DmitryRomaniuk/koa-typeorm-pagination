@@ -122,14 +122,14 @@ describe('Tests', function () {
         ].forEach(function (_a) {
             var value = _a.value, type = _a.type;
             it("returns a valid Sort instance when a value of type " + type + " is passed to the constructor", function () {
-                var pageable = new index_1.Pageable(1, 10, true, value);
+                var pageable = new index_1.Pageable(1, 10, value);
                 expect(pageable.sort).toMatchSnapshot();
             });
         });
         it('disregards extra commas in the sort array passed in as a parameter', function () {
             var _a;
             var invalidSort = ['valueA,', 'valueB,,', 'valueC,,,'];
-            var result = new index_1.Pageable(0, 20, false, invalidSort);
+            var result = new index_1.Pageable(0, 20, invalidSort);
             var invalidValues = (_a = result.sort) === null || _a === void 0 ? void 0 : _a.orders.filter(function (order) { return order.property.length === 0; });
             expect(invalidValues).toHaveLength(0);
         });
@@ -140,7 +140,7 @@ describe('Tests', function () {
                 'valueB::desc',
                 'valueC::::desc',
             ];
-            var pageable = new index_1.Pageable(0, 20, false, invalidSort);
+            var pageable = new index_1.Pageable(0, 20, invalidSort);
             var invalidValues = (_a = pageable.sort) === null || _a === void 0 ? void 0 : _a.orders.filter(function (order) { return order.property.length === 0; });
             expect(invalidValues).toHaveLength(0);
         });
@@ -148,7 +148,7 @@ describe('Tests', function () {
     describe('ArrayPage class', function () {
         var getValidPage = function () {
             var sort = new index_1.Sort(pageOrders);
-            var pageable = new index_1.Pageable(0, 20, false, sort);
+            var pageable = new index_1.Pageable(0, 20, sort);
             return new index_1.ArrayPage(content, 2, pageable);
         };
         it('matches snapshot when valid parameters are passed to the constructor', function () {
@@ -158,49 +158,6 @@ describe('Tests', function () {
         it('results of instance.map() method result matches snapshot', function () {
             var page = getValidPage();
             var result = page.map(function (pageContent, idx) { return (__assign(__assign({}, pageContent), { age: idx * 5 })); });
-            expect(result).toMatchSnapshot();
-        });
-    });
-    describe('IndexedPage class', function () {
-        var getValidIndexedPage = function () {
-            var sort = new index_1.Sort(pageOrders);
-            var pageable = new index_1.Pageable(0, 20, false, sort);
-            var ids = [1, 2];
-            var index = content.reduce(function (acc, record) {
-                var _a;
-                return (__assign(__assign({}, acc), (_a = {}, _a[record.id] = record, _a)));
-            }, {});
-            return new index_1.IndexedPage(ids, index, 2, pageable);
-        };
-        it('matches snapshot when valid parameters are passed to the constructor', function () {
-            var result = getValidIndexedPage();
-            expect(result).toMatchSnapshot();
-        });
-        it('results of instance.map() method result matches snapshot', function () {
-            var page = getValidIndexedPage();
-            var result = page.map(function (pageContent, idx) { return (__assign(__assign({}, pageContent), { age: idx * 5 })); });
-            expect(result).toMatchSnapshot();
-        });
-    });
-    describe('IndexablePage class', function () {
-        var getValidIndexablePage = function (isIndexed) {
-            if (isIndexed === void 0) { isIndexed = false; }
-            var sort = new index_1.Sort(pageOrders);
-            var pageable = new index_1.Pageable(0, 20, isIndexed, sort);
-            return new index_1.IndexablePage(content, 2, pageable);
-        };
-        it('matches snapshot when valid parameters are passed to the constructor', function () {
-            var result = getValidIndexablePage();
-            expect(result).toMatchSnapshot();
-        });
-        it('results of instance.map() method result matches snapshot', function () {
-            var page = getValidIndexablePage();
-            var result = page.map(function (pageContent, idx) { return (__assign(__assign({}, pageContent), { age: idx * 5 })); });
-            expect(result).toMatchSnapshot();
-        });
-        it('instance.toJSON() method result matches snapshot', function () {
-            var page = getValidIndexablePage(true);
-            var result = page.toJSON();
             expect(result).toMatchSnapshot();
         });
     });
@@ -218,7 +175,7 @@ describe('Tests', function () {
         it('context.state matches snapshot when paginate is called with valid context', function () { return __awaiter(void 0, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, index_1.paginate(context, next)];
+                    case 0: return [4 /*yield*/, index_1.paginateMiddleware(context, next)];
                     case 1:
                         _a.sent();
                         expect(context.state).toMatchSnapshot();
@@ -232,7 +189,7 @@ describe('Tests', function () {
                 switch (_a.label) {
                     case 0:
                         updatedQuery = __assign(__assign({}, context.query), { page: '10', size: '15' });
-                        return [4 /*yield*/, index_1.paginate(__assign(__assign({}, context), { query: updatedQuery }), next)];
+                        return [4 /*yield*/, index_1.paginateMiddleware(__assign(__assign({}, context), { query: updatedQuery }), next)];
                     case 1:
                         _a.sent();
                         expect(context.state).toMatchSnapshot();
@@ -246,7 +203,7 @@ describe('Tests', function () {
                 switch (_a.label) {
                     case 0:
                         updatedQuery = __assign(__assign({}, context.query), { page: '', size: '' });
-                        return [4 /*yield*/, index_1.paginate(__assign(__assign({}, context), { query: updatedQuery }), next)];
+                        return [4 /*yield*/, index_1.paginateMiddleware(__assign(__assign({}, context), { query: updatedQuery }), next)];
                     case 1:
                         _a.sent();
                         expect(context.state).toMatchSnapshot();
@@ -260,7 +217,7 @@ describe('Tests', function () {
                 switch (_a.label) {
                     case 0:
                         updatedQuery = { indexed: 'true' };
-                        return [4 /*yield*/, index_1.paginate(__assign(__assign({}, context), { query: updatedQuery }), next)];
+                        return [4 /*yield*/, index_1.paginateMiddleware(__assign(__assign({}, context), { query: updatedQuery }), next)];
                     case 1:
                         _a.sent();
                         expect(context.state).toMatchSnapshot();
@@ -277,7 +234,7 @@ describe('Tests', function () {
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 3, , 4]);
-                        return [4 /*yield*/, index_1.paginate(__assign(__assign({}, context), { query: updatedQuery }), next)];
+                        return [4 /*yield*/, index_1.paginateMiddleware(__assign(__assign({}, context), { query: updatedQuery }), next)];
                     case 2:
                         _a.sent();
                         return [3 /*break*/, 4];
@@ -298,7 +255,7 @@ describe('Tests', function () {
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 3, , 4]);
-                        return [4 /*yield*/, index_1.paginate(__assign(__assign({}, context), { query: updatedQuery }), next)];
+                        return [4 /*yield*/, index_1.paginateMiddleware(__assign(__assign({}, context), { query: updatedQuery }), next)];
                     case 2:
                         _a.sent();
                         return [3 /*break*/, 4];

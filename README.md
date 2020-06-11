@@ -9,8 +9,6 @@
     * [All Page types](#all-page-types)
       * [Map Method](#map-method)
     * [ArrayPage](#arraypage)
-    * [IndexedPage](#indexedpage)
-    * [IndexablePage](#indexablepage)
     * [Output Format](#output-format)
       * [Non\-Indexed](#non-indexed)
       * [Indexed](#indexed)
@@ -25,7 +23,7 @@
 * [API Documentation](#api-documentation)
 
 # About
-It's fork [koa-pageable](https://github.com/panderalabs/koa-pageable) but koa-pageble is unmaintained
+It's fork [koa-pageable](https://github.com/panderalabs/koa-pageable) but koa-pageable is unmaintained
 `koa-ctx-pageable` is middleware for pagination in [Koa](https://github.com/koajs/koa) inspired by [Spring Data](http://docs.spring.io/spring-data/commons/docs/current/reference/html/)'s Pagination support.
 
 It allows clients of your API to easily request subsets of your data by providing query parameters to specify the amount, order, and formatting of the requested data. For instance, if you had an endpoint `/people` backed by a data store containing 1000 people records, `koa-pageable` allows a client to request the data be broken up into 10 person pages, and to receive 2nd page of people sorted by their lastname (`GET /people?page=1&size=10&sort=lastname`)
@@ -39,10 +37,9 @@ When enabled this middleware parses request query parameters from `ctx.query` in
 
 Parameter | Default Value | Description  
 ----------|---------------|------------
-`page`    | `0`           | The 0-indexed page to be retrieved 
-`size`    | `10`          | Maximum number of elements to be included in the retrieved page  
+`current` | `0`           | The 0-indexed page to be retrieved 
+`pageSize`| `20`          | Maximum number of elements to be included in the retrieved page  
 `sort`    | `undefined`   | Properties that should be sorted, in the specified order. Properties are separated by a `,` and directions are separated with a `:`. Valid directions are `asc` and `desc` and if not specified, direction defaults to `asc`. For example to sort by `lastname` ascending, then `firstname` descending: `?sort=lastname,firstname:desc`|         
-`indexed` | `false`       | If the underlying content supports it (i.e. has an `id` property) return results in indexed format. Which is an array of ids and a map of {id : content item}
 
 #### Pageable
 The `Pageable` object created from the query parameters contains two integers, `page` & `size`, an optional `Sort` instance, and an `indexed` boolean.
@@ -86,21 +83,6 @@ A `Page` of content items represented as an array. An `ArrayPage` contains all o
 Property  | Description
 ----------|------------
 `content` | Array of content ordered as per `pageable.sort`
-  
-### IndexedPage
-An `IndexedPage` represents the returned content as an array of `ids` and a corresponding `index`, which is a map of `{id: content item}`.
-An `IndexedPage` contains all of the standard page properties plus:
-
-Property | Description
----------|------------
-`ids`    | Array of ids ordered as per `pageable.sort`
-`index`  | Map of id to content item  
-
-
-### IndexablePage
-An `IndexablePage` is a special case of `Page`, it internally stores its data in the same format as a `ArrayPage` but allows the client some level of control over the response structure.  
-Upon serialization (i.e. invoking `toJSON()`) if the `pageable.indexed` value is set to `true`, the result will be serialized as an `IndexedPage` (else as an `ArrayPage`). 
-In order to support this automatic conversion, the underlying content items _must_ each contain an `id` property.
 
 ### Output Format 
 
@@ -141,47 +123,6 @@ In order to support this automatic conversion, the underlying content items _mus
   "numberOfElements": 2
 }
 ```
-#### Indexed
-`GET /people?page=2&size=2&sort=firstname,lastname:desc&indexed=true`
-
-```json
-{
-  "number": 2,
-  "size": 2,
-  "sort": [
-    {
-      "direction": "desc",
-      "property": "id"
-    },
-    {
-      "direction": "asc",
-      "property": "createdTimestamp"
-    }
-  ],
-  "totalElements": 18,
-  "totalPages": 9,
-  "first": false,
-  "last": false,
-  "ids": [
-    202,
-    200
-  ],
-  "index": {
-    "200": {
-      "id": 200,
-      "firstName": "Frank",
-      "lastName": "Jones"
-    },
-    "202": {
-      "id": 202,
-      "firstName": "Bob",
-      "lastName": "Jones"
-    }
-  },
-  "numberOfElements": 2
-}
-```
-
 # Getting Started
 
 ## Installation
@@ -203,7 +144,7 @@ Note: The following examples includes optional flow type annotations for clarity
 ## Examples
 ### Router
 ```typescript
-import { Pageable, IndexedPage, paginate } from '@panderalabs/koa-pageable';
+import { Pageable, IndexedPage, paginate } from '@panderalabs/koa-pageable'; // todo: refactor
 import Koa from 'koa';
 
 var app = new Koa();
