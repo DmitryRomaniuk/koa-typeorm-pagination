@@ -1,8 +1,8 @@
 "use strict";
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.Pagination = void 0;
-var Pagination = /** @class */ (function () {
-    function Pagination(
+class Pagination {
+    constructor(
     /**
      * a list of items to be returned
      */
@@ -14,6 +14,5 @@ var Pagination = /** @class */ (function () {
         this.items = items;
         this.meta = meta;
     }
-    return Pagination;
-}());
+}
 exports.Pagination = Pagination;

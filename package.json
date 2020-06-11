@@ -4,7 +4,8 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc --outDir dist",
+    "build": "rm -rf ./dist && tsc && npm run build:index",
+    "build:index": "rm -rf ./index.js ./index.d.ts && tsc -d --skipLibCheck ./index.ts",
     "test": "jest"
   },
   "repository": {
