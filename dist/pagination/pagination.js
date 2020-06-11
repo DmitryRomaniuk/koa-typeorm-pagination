@@ -6,13 +6,13 @@ class Pagination {
     /**
      * a list of items to be returned
      */
-    items, 
+    content, 
     /**
      * associated meta information (e.g., counts)
      */
-    meta) {
-        this.items = items;
-        this.meta = meta;
+    pagination) {
+        this.content = content;
+        this.pagination = pagination;
     }
 }
 exports.Pagination = Pagination;

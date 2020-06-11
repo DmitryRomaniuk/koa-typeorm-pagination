@@ -20,15 +20,10 @@ function paginate(repositoryOrQueryBuilder, options, searchOptions) {
     });
 }
 exports.paginate = paginate;
-function createPaginationObject(items, totalItems, current, pageSize, route) {
+function createPaginationObject(content, totalItems, current, pageSize) {
     const totalPages = Math.ceil(totalItems / pageSize);
-    const hasFirstPage = route;
-    const hasPreviousPage = route && current > 1;
-    const hasNextPage = route && current < totalPages;
-    const hasLastPage = route;
-    const symbol = route && new RegExp(/\?/).test(route) ? '&' : '?';
-    return new pagination_1.Pagination(items, {
-        itemCount: items.length,
+    return new pagination_1.Pagination(content, {
+        itemCount: content.length,
         total: totalItems,
         pageSize: pageSize,
         totalPages: totalPages,

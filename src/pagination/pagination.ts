@@ -5,10 +5,10 @@ export class Pagination<PaginationObject> {
         /**
          * a list of items to be returned
          */
-        public readonly items: PaginationObject[],
+        public readonly content: PaginationObject[],
         /**
          * associated meta information (e.g., counts)
          */
-        public readonly meta: IPaginationMeta
+        public readonly pagination: IPaginationMeta
     ) {}
 }

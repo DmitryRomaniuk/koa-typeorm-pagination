@@ -32,26 +32,18 @@ export async function paginate<T>(
 }
 
 function createPaginationObject<T>(
-    items: T[],
+    content: T[],
     totalItems: number,
     current: number,
-    pageSize: number,
-    route?: string
+    pageSize: number
 ) {
     const totalPages = Math.ceil(totalItems / pageSize)
 
-    const hasFirstPage = route
-    const hasPreviousPage = route && current > 1
-    const hasNextPage = route && current < totalPages
-    const hasLastPage = route
-
-    const symbol = route && new RegExp(/\?/).test(route) ? '&' : '?'
-
     return new Pagination(
-        items,
+        content,
 
         {
-            itemCount: items.length,
+            itemCount: content.length,
             total: totalItems,
             pageSize: pageSize,
 
