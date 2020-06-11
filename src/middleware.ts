@@ -233,23 +233,23 @@ export class Pageable {
     /**
      * The number of the Page to be returned
      */
-    page: number
+    current: number
     /**
      * The number of elements in the Page to be returned
      */
-    size: number
+    pageSize: number
     /**
      * The order of the elements in the Page to be returned
      */
     sort?: Sort
 
     constructor(
-        pageNumber: number = 0,
+        current: number = 0,
         pageSize: number = 20,
         sort?: string | Array<string> | Sort
     ) {
-        this.page = pageNumber
-        this.size = pageSize
+        this.current = current
+        this.pageSize = pageSize
 
         if (sort) {
             if (sort instanceof Sort) {
@@ -258,107 +258,6 @@ export class Pageable {
                 this.sort = parseSort(sort)
             }
         }
-    }
-}
-
-/**
- * "Base class" for container for content being returned.
- * @param totalElements The total number of elements in the data set
- * @param pageable The {@link Pageable} containing the paging information
- */
-export class Page {
-    /**
-     * The number of the current page
-     */
-    number: number
-
-    /**
-     * Size of the page (based on requested value)
-     */
-    size: number
-
-    /**
-     * Number of elements in the current page
-     */
-    numberOfElements: number
-
-    /**
-     * Total number of elements available
-     */
-    totalElements: number
-
-    /**
-     * Total number of pages available
-     */
-    totalPages: number
-
-    /**
-     * Sort of this page
-     */
-    sort?: Sort
-
-    /**
-     * True if this is the first page
-     */
-    first: boolean
-
-    /**
-     * True if this is the last page in the available data set
-     */
-    last: boolean
-
-    constructor(totalElements: number, pageable: Pageable) {
-        this.number = pageable.page
-        this.size = pageable.size
-        this.sort = pageable.sort
-        this.totalElements = totalElements
-
-        // calculated values
-        this.totalPages = Math.max(Math.ceil(totalElements / this.size), 1)
-        this.first = this.number === 0
-        this.last = this.number >= this.totalPages - 1
-    }
-}
-
-// Sadly documentation.js does not reasonably  handle inheritance
-// (https://github.com/documentationjs/documentation/issues/390)  Can remove the duplicated constructor parameters on
-// children of Page once the above is resolved.
-
-/**
- * Represents a sublist of a list of objects. Provides details about the total list, including whether there is more
- * data available.
- * @param content The content to be returned
- * @param totalElements The total number of elements in the data set
- * @param pageable The {@link Pageable} containing the paging information
- */
-export class ArrayPage<T> extends Page {
-    /**
-     * Array of content
-     */
-    content: Array<T>
-
-    constructor(
-        content: Array<T> = [],
-        totalElements: number,
-        pageable: Pageable
-    ) {
-        super(totalElements, pageable)
-        this.content = content
-        this.numberOfElements = this.content.length
-    }
-
-    /**
-     * Returns a new Page created by invoking `iteratee` on each element in `content`
-     *
-     * @param iteratee Method to transform content elements
-     * @returns Instance of Page
-     */
-    map<R>(iteratee: (value: T, index: number, array: T[]) => R): ArrayPage<R> {
-        return new ArrayPage(
-            this.content.map(iteratee),
-            this.totalElements,
-            new Pageable(this.number, this.size, this.sort)
-        )
     }
 }
 
@@ -382,12 +281,10 @@ export async function paginateMiddleware(ctx: Context, next: Function) {
 export default {
     paginateMiddleware,
     Order,
-    ArrayPage,
     Direction,
     InvalidSortError,
     KoaPageableError,
     NumberFormatError,
-    Page,
     Pageable,
     Sort,
 }
