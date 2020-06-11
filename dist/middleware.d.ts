@@ -96,77 +96,16 @@ export declare class Pageable {
     /**
      * The number of the Page to be returned
      */
-    page: number;
+    current: number;
     /**
      * The number of elements in the Page to be returned
      */
-    size: number;
+    pageSize: number;
     /**
      * The order of the elements in the Page to be returned
      */
     sort?: Sort;
-    constructor(pageNumber?: number, pageSize?: number, sort?: string | Array<string> | Sort);
-}
-/**
- * "Base class" for container for content being returned.
- * @param totalElements The total number of elements in the data set
- * @param pageable The {@link Pageable} containing the paging information
- */
-export declare class Page {
-    /**
-     * The number of the current page
-     */
-    number: number;
-    /**
-     * Size of the page (based on requested value)
-     */
-    size: number;
-    /**
-     * Number of elements in the current page
-     */
-    numberOfElements: number;
-    /**
-     * Total number of elements available
-     */
-    totalElements: number;
-    /**
-     * Total number of pages available
-     */
-    totalPages: number;
-    /**
-     * Sort of this page
-     */
-    sort?: Sort;
-    /**
-     * True if this is the first page
-     */
-    first: boolean;
-    /**
-     * True if this is the last page in the available data set
-     */
-    last: boolean;
-    constructor(totalElements: number, pageable: Pageable);
-}
-/**
- * Represents a sublist of a list of objects. Provides details about the total list, including whether there is more
- * data available.
- * @param content The content to be returned
- * @param totalElements The total number of elements in the data set
- * @param pageable The {@link Pageable} containing the paging information
- */
-export declare class ArrayPage<T> extends Page {
-    /**
-     * Array of content
-     */
-    content: Array<T>;
-    constructor(content: Array<T>, totalElements: number, pageable: Pageable);
-    /**
-     * Returns a new Page created by invoking `iteratee` on each element in `content`
-     *
-     * @param iteratee Method to transform content elements
-     * @returns Instance of Page
-     */
-    map<R>(iteratee: (value: T, index: number, array: T[]) => R): ArrayPage<R>;
+    constructor(current?: number, pageSize?: number, sort?: string | Array<string> | Sort);
 }
 /**
  * Koa Middleware function that reads pagination parameters from the query string, and populate `ctx.state.pageable`
@@ -180,12 +119,10 @@ export declare function paginateMiddleware(ctx: Context, next: Function): Promis
 declare const _default: {
     paginateMiddleware: typeof paginateMiddleware;
     Order: typeof Order;
-    ArrayPage: typeof ArrayPage;
     Direction: typeof Direction;
     InvalidSortError: typeof InvalidSortError;
     KoaPageableError: typeof KoaPageableError;
     NumberFormatError: typeof NumberFormatError;
-    Page: typeof Page;
     Pageable: typeof Pageable;
     Sort: typeof Sort;
 };

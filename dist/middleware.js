@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.paginateMiddleware = exports.ArrayPage = exports.Page = exports.Pageable = exports.Sort = exports.Order = exports.Direction = exports.InvalidSortError = exports.NumberFormatError = exports.KoaPageableError = void 0;
+exports.paginateMiddleware = exports.Pageable = exports.Sort = exports.Order = exports.Direction = exports.InvalidSortError = exports.NumberFormatError = exports.KoaPageableError = void 0;
 const lodash_1 = require("lodash");
 /**
  * Base Class for error types thrown by Koa Paginate.
@@ -212,9 +212,9 @@ function parseSort(sortRequestQuery) {
  * @param sort Optional. The order to return the results in, ordered list of property, {@link Direction}.
  */
 class Pageable {
-    constructor(pageNumber = 0, pageSize = 20, sort) {
-        this.page = pageNumber;
-        this.size = pageSize;
+    constructor(current = 0, pageSize = 20, sort) {
+        this.current = current;
+        this.pageSize = pageSize;
         if (sort) {
             if (sort instanceof Sort) {
                 this.sort = sort;
@@ -226,51 +226,6 @@ class Pageable {
     }
 }
 exports.Pageable = Pageable;
-/**
- * "Base class" for container for content being returned.
- * @param totalElements The total number of elements in the data set
- * @param pageable The {@link Pageable} containing the paging information
- */
-class Page {
-    constructor(totalElements, pageable) {
-        this.number = pageable.page;
-        this.size = pageable.size;
-        this.sort = pageable.sort;
-        this.totalElements = totalElements;
-        // calculated values
-        this.totalPages = Math.max(Math.ceil(totalElements / this.size), 1);
-        this.first = this.number === 0;
-        this.last = this.number >= this.totalPages - 1;
-    }
-}
-exports.Page = Page;
-// Sadly documentation.js does not reasonably  handle inheritance
-// (https://github.com/documentationjs/documentation/issues/390)  Can remove the duplicated constructor parameters on
-// children of Page once the above is resolved.
-/**
- * Represents a sublist of a list of objects. Provides details about the total list, including whether there is more
- * data available.
- * @param content The content to be returned
- * @param totalElements The total number of elements in the data set
- * @param pageable The {@link Pageable} containing the paging information
- */
-class ArrayPage extends Page {
-    constructor(content = [], totalElements, pageable) {
-        super(totalElements, pageable);
-        this.content = content;
-        this.numberOfElements = this.content.length;
-    }
-    /**
-     * Returns a new Page created by invoking `iteratee` on each element in `content`
-     *
-     * @param iteratee Method to transform content elements
-     * @returns Instance of Page
-     */
-    map(iteratee) {
-        return new ArrayPage(this.content.map(iteratee), this.totalElements, new Pageable(this.number, this.size, this.sort));
-    }
-}
-exports.ArrayPage = ArrayPage;
 /**
  * Koa Middleware function that reads pagination parameters from the query string, and populate `ctx.state.pageable`
  * with a {@link Pageable} instance.
@@ -292,12 +247,10 @@ exports.paginateMiddleware = paginateMiddleware;
 exports.default = {
     paginateMiddleware,
     Order,
-    ArrayPage,
     Direction,
     InvalidSortError,
     KoaPageableError,
     NumberFormatError,
-    Page,
     Pageable,
     Sort,
 };
