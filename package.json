@@ -1,6 +1,6 @@
 {
   "name": "koa-typeorm-pagination",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
@@ -10,15 +10,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/DmitryRomaniuk/koa-ctx-pagination.git"
+    "url": "git+https://github.com/DmitryRomaniuk/koa-typeorm-pagination.git"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/DmitryRomaniuk/koa-ctx-pagination/issues"
+    "url": "https://github.com/DmitryRomaniuk/koa-typeorm-pagination/issues"
   },
-  "homepage": "https://github.com/DmitryRomaniuk/koa-ctx-pagination#readme",
+  "homepage": "https://github.com/DmitryRomaniuk/koa-typeorm-pagination#readme",
   "dependencies": {
     "lodash-es": "^4.17.15"
   },
